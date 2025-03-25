@@ -12,6 +12,7 @@ app.use((req, res, next) => {
 
 app.set("view engine", "ejs");
 
+app.use(express.static(__dirname + "/public"))
 app.use(express.json());
 
 const countrySchema = new mongoose.Schema({
@@ -42,7 +43,7 @@ app.post("/add/country", async (req, res) => {
 
 app.get("/", async (req, res) => {
   const countries = await Country.find({ })
-    res.render("countries.ejs", countries)
+    res.render("countries.ejs", {countries})
 })
 
 // Go to countries.ejs and follow the tasks there (2 points)
@@ -52,13 +53,19 @@ app.get("/", async (req, res) => {
 // Test this route on post man
 
 
-app.get("/update/:name", async (req, res) => {
-  const Country = await Country.find({name: req.params.name })
+app.patch("/update/:name", async (req, res) => {
+  const response = await Country.findOneAndUpdate({country: req.params.name }, {population: req.body.population})
+  res.json(response)
+
 })
 
 // Create a DELETE route handler for "/delete/country" that deletes a country of your choice (3 points)
 // Test this route on post man
 
+app.delete("/delete/:name", async (req, res) => {
+  const response = await Country.findOneAndDelete({country: req.params.name})
+  res.json(response)
+})
 
 async function startServer() {
   
